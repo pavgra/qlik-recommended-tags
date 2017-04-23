@@ -1,0 +1,22 @@
+{
+  "name": "qlik-recommended-tags",
+  "version": "1.0.0",
+  "description": "",
+  "main": "qlik-recommended-tags.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pavgra/qlik-recommended-tags.git"
+  },
+  "author": "Pavel Grafkin",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pavgra/qlik-recommended-tags/issues"
+  },
+  "homepage": "https://github.com/pavgra/qlik-recommended-tags#readme",
+  "dependencies": {
+    "moment": "^2.18.1"
+  }
+}

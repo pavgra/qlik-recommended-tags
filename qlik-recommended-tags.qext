@@ -1,0 +1,15 @@
+{
+	"name": "qlik-recommended-tags",
+	"description": "Suggests sets of tags you might be interested in",
+	"type": "visualization",
+	"version": "1.0.0",
+	"icon": "extension",
+	"author": "Pavel Grafkin",
+	"homepage": "",
+	"keywords": "qlik-sense, visualization, recommendation, tags",
+	"license": "",
+	"repository": "",
+	"dependencies": {
+		"qlik-sense": ">=3.0.x"
+	}
+}
