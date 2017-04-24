@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/pavgra/qlik-recommended-tags#readme",
   "dependencies": {
-    "moment": "^2.18.1"
+    "moment": "^2.18.1",
+    "object-hash": "^1.1.8"
   }
 }

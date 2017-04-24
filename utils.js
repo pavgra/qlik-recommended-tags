@@ -2,9 +2,29 @@ define(
   [
     'qlik',
     'jquery',
-    './node_modules/moment/moment'
+    './node_modules/moment/moment',
+    './node_modules/object-hash/dist/object_hash',
   ],
-  function (qlik, $, moment) {
+  function (qlik, $, moment, objectHash) {
+
+    // Returns a function, that, as long as it continues to be invoked, will not
+    // be triggered. The function will be called after it stops being called for
+    // N milliseconds. If `immediate` is passed, trigger the function on the
+    // leading edge, instead of the trailing.
+    function debounce(func, wait, immediate) {
+      var timeout;
+      return function() {
+        var context = this, args = arguments;
+        var later = function() {
+          timeout = null;
+          if (!immediate) func.apply(context, args);
+        };
+        var callNow = immediate && !timeout;
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+        if (callNow) func.apply(context, args);
+      };
+    };
 
     const EVENT_TYPE = {
       set: '$set',
@@ -18,25 +38,52 @@ define(
     };
 
     function sendEvent(event) {
-      const dfd = jQuery.Deferred();
+      const EVENT_SERVER_URL = 'http://54.159.100.138:1010/events.json?accessKey=CT3TNcBbZ4gMMBC0NUEoHUGaqqSFwR95DSN7wOjVlg6kALWwiE31mCee9Zk_nYQu';
 
-      setTimeout(() => {
-        dfd.resolve(event);
-      }, 1000);
+      const query = $.ajax({
+        type: 'POST',
+        url: EVENT_SERVER_URL,
+        dataType: 'json',
+        contentType: 'application/json;charset=utf-8',
+        data: JSON.stringify(event)
+      });
 
-      return dfd.promise();
+      return query.promise();
     }
 
+    /*
+      {
+        "user": "1",
+        "userBias": 2, // favor personal recommendations
+        "num": 10,
+        "fields": [
+          {
+            "name": "category"
+            "values": ["user"],
+            "bias": -1 // filter out all except mentioned category
+          },{
+            "name": "keywords",
+            "values": ["f2"]
+            "bias": 1.02 // boost/favor recommendations with the 'genre' = 'sci-fi' or 'detective'
+          }
+        ]
+      }
+     */    
     function queryRecommendations() {
       const RS_URL = 'http://54.159.100.138:9090/queries.json';
 
       const query = $.ajax({
         type: 'POST',
         url: RS_URL,
+        dataType: 'json',
         data: {}
       });
 
       return query.promise();
+    }
+
+    function buildEventName(properties) {
+      return objectHash.sha1(properties);
     }
 
     function buildEvent({
@@ -87,7 +134,7 @@ define(
     function buildNewItemEvent({
       properties
     }) {
-      const itemId = 'filter_' + 123;
+      const itemId = buildEventName(properties);
 
       return buildEvent({
         event: EVENT_TYPE.set,
@@ -99,20 +146,20 @@ define(
 
     function buildViewEvent({
       userId,
-      properties
+      itemId
     }) {
-      const itemId = 'filter_' + 123;
-
       return buildEvent({
         event: EVENT_TYPE.view,
         entityType: ENTITY_TYPE.user,
         entityId: userId,
         targetEntityType: ENTITY_TYPE.item,
         targetEntityId: itemId,
-      });      
+      });
     }
 
     return {
+      debounce,
+      //
       EVENT_TYPE,
       ENTITY_TYPE,
       buildNewItemEvent,

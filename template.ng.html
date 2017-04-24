@@ -1,10 +1,30 @@
 <div qv-extension>
 	<div>
-		Event list:
+		<b>Current filter set:</b>
+	</div>
+	<div>
+		{{currentFilterSet || 'None'}}
+	</div>
+	<br />	
+	<div>
+		<b>Recommended filter sets:</b>
+	</div>
+	{{recommendedFilterSetList}}
+	<div ng-if="!recommendedFilterSetList">
+	  Please, select some filters to start
+	</span>
+  <ul>
+    <li ng-repeat="filterSet in recommendedFilterSetList track by $index">
+      <pre>>> {{filterSet}}</pre>
+    </li>
+  </ul>
+  
+	<!-- <div>
+		<b>Event list:</b>
 	</div>
 	<ul>
-    <li ng-repeat="event in eventList">
+    <li ng-repeat="event in eventList track by $index">
     	<pre>>> {{event}}</pre>
     </li>
-	</ul>
+	</ul> -->
 </div>
