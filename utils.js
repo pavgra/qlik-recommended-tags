@@ -26,6 +26,16 @@ define(
       };
     };
 
+    function withoutKeys(obj, keys) {
+      var target = {};
+      for (var i in obj) {
+        if (keys.indexOf(i) >= 0) continue;
+        if (!Object.prototype.hasOwnProperty.call(obj, i)) continue;
+        target[i] = obj[i];
+      }
+      return target;
+    }
+
     const EVENT_TYPE = {
       set: '$set',
       view: 'view',
@@ -159,6 +169,7 @@ define(
 
     return {
       debounce,
+      withoutKeys,
       //
       EVENT_TYPE,
       ENTITY_TYPE,

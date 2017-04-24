@@ -9,16 +9,16 @@
 	<div>
 		<b>Recommended filter sets:</b>
 	</div>
-	{{recommendedFilterSetList}}
-	<div ng-if="!recommendedFilterSetList">
+	<div ng-if="recommendedFilterSetList.length == 0">
 	  Please, select some filters to start
-	</span>
-  <ul>
-    <li ng-repeat="filterSet in recommendedFilterSetList track by $index">
-      <pre>>> {{filterSet}}</pre>
-    </li>
-  </ul>
-  
+	</div>
+	<div ng-if="recommendedFilterSetList.length > 0">
+	  <ul>
+	    <li ng-repeat="filterSet in recommendedFilterSetList track by $index">
+	      <pre>>> {{filterSet}}</pre>
+	    </li>
+	  </ul>
+	</div>
 	<!-- <div>
 		<b>Event list:</b>
 	</div>

@@ -43,7 +43,7 @@ define(
 
               // TODO: Replace spaces in key name!
 
-              filters[f.qField] = f.qSelected.split(', ');
+              filters[f.qField.replace(/ /g, '__')] = f.qSelected.split(', ');
             });
 
             /*
@@ -79,7 +79,10 @@ define(
               .then(() => utils.queryRecommendations())
               .then((recommendationList) => {
                 logEvent('Retrieve recommendations:\n' + JSON.stringify(recommendationList));
-                recommendedFilterSetList = recommendationList.itemScores.map(r => JSON.stringify(r.source))
+                recommendedFilterSetList = recommendationList.itemScores.map(r => {
+                  const f = utils.withoutKeys(r.source, ['id', 'view']);
+                  return JSON.stringify(f);
+                });
               })
               .then(() => {
                 $scope.$apply(() => {
@@ -96,7 +99,7 @@ define(
 
         $scope.eventList = eventList;
         $scope.currentFilterSet = null;
-        // $scope.recommendedFilterSetList = ['a', 'b'];
+        $scope.recommendedFilterSetList = [];
       }]
     };
 
