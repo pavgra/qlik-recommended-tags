@@ -21,11 +21,14 @@ define(
           $scope.$apply(() => eventList.push(event));
         }
 
-        // Ignore first initial call
         let isFiltersInitialCb = true;
 
+        // Callback for filters updated event.
+        // Need to debounce it to prevent calls for intermediate results
         const filtersUpdatedCb = utils.debounce(
           (reply) => {
+
+            // Ignore first initial call
             if (isFiltersInitialCb) {
               console.log('>> Ignoring initial CurrentSelections event');
               isFiltersInitialCb = false;
@@ -40,9 +43,7 @@ define(
             let filters = {};
 
             rawSelectedFilters.forEach(f => {
-
-              // TODO: Replace spaces in key name!
-
+              // Need to replace spaces in properties names
               filters[f.qField.replace(/ /g, '__')] = f.qSelected.split(', ');
             });
 
@@ -58,8 +59,10 @@ define(
               }
             );
 
-            const newItemEvent = utils.buildNewItemEvent({ properties: filterSet });
-            const viewEvent = utils.buildViewEvent({
+            const newItemEvent = utils.buildNewItemEvent({
+              properties: filterSet
+            });
+            const viewItemEvent = utils.buildViewEvent({
               userId: userId,
               itemId: newItemEvent.entityId,
             });
@@ -73,19 +76,38 @@ define(
 
             utils
               .sendEvent(newItemEvent)
-              .then(event => logEvent('Send new item event:\n' + JSON.stringify(event)))
-              .then(() => utils.sendEvent(viewEvent))
-              .then(event => logEvent('Send usage event:\n' + JSON.stringify(event)))
+              .then(event => {
+                logEvent(
+                  'Send new item event:\n' + 
+                  JSON.stringify(event)
+                )
+              })
+              .then(() => utils.sendEvent(viewItemEvent))
+              .then(event => {
+                logEvent(
+                  'Send usage event:\n' + 
+                  JSON.stringify(event)
+                )
+              })
               .then(() => utils.queryRecommendations())
               .then((recommendationList) => {
-                logEvent('Retrieve recommendations:\n' + JSON.stringify(recommendationList));
-                recommendedFilterSetList = recommendationList.itemScores.map(r => {
-                  const f = utils.withoutKeys(r.source, ['id', 'view']);
-                  return JSON.stringify(f);
-                });
+                logEvent(
+                  'Retrieve recommendations:\n' + 
+                  JSON.stringify(recommendationList)
+                );
+                recommendedFilterSetList = recommendationList.itemScores.map(
+                  r => {
+                    const f = utils.withoutKeys(
+                      r.source,
+                      ['id', 'view']
+                    );
+                    return JSON.stringify(f);
+                  }
+                );
               })
               .then(() => {
                 $scope.$apply(() => {
+                  // Display recommendations
                   $scope.currentFilterSet = currentFilterSet;
                   $scope.recommendedFilterSetList = recommendedFilterSetList;
                 });
